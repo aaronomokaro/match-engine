@@ -105,6 +105,21 @@ def check_season_window(df):
     if len(outside) > 0:
         raise ValueError(f"Dates outside {window_start.date()} to {window_end.date()}:\n{outside}")
 
+def expected_result(row):
+    if row["home_goals"] > row["away_goals"]:
+        return "H"
+    elif row["away_goals"] > row["home_goals"]:
+        return "A"
+    else:
+        return "D"
+
+def check_results(df):
+    expected = df.apply(expected_result, axis=1)
+    wrong = df[expected != df["result"]]
+    if len(wrong) > 0:
+        raise ValueError(f"Result doesn't match goals:\n{wrong}")
+
+
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
         try:
@@ -114,7 +129,8 @@ if __name__ == "__main__":
             df = parse_dates(df)
             df = clean_team_names(df)
             df = add_season(df, name)
-            df.loc[0, "date"] = pd.Timestamp(2099, 1, 1)
+            df.loc[0, "result"] = "x"
+            check_results(df)
             check_season_window(df)
             print(name, df.shape, "OK")  
         except Exception as e:
