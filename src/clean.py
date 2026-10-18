@@ -157,6 +157,16 @@ def check_odds(df):
     if len(bad) > 0:
         raise ValueError(f"invalid odds:\n{bad}")
 
+def check_match_count(df):
+    season = df["season"].iloc[0]  
+    if season in ["1993-94", "1994-95"]:
+        expected = 462
+    else:
+        expected = 380
+    if len(df) != expected:
+        print(f"WARNING: {season} has {len(df)} matches, expected {expected}")   
+
+
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
         try:
@@ -170,8 +180,8 @@ if __name__ == "__main__":
             check_goals(df)
             check_results(df)
             check_duplicates(df)
-            df.loc[0, "odds_home"] = 0.5
             check_odds(df)
+            check_match_count(df)
             print(name, df.shape, "OK")  
         except Exception as e:
             print(name, "FAILED:", e)     
