@@ -29,8 +29,17 @@ def add_elo(matches):
     ratings = {}
     elo_home = []
     elo_away = []
+    season_end = {}
+    current_season = None
 
-    for home, away, result in zip(matches["home_team"], matches["away_team"], matches["result"]):
+    for home, away, result, season in zip(
+        matches["home_team"], matches["away_team"], matches["result"], matches["season"]
+    ):
+        if season != current_season:
+            if current_season is not None:
+                season_end[current_season] = dict(ratings)
+            current_season = season
+
         home_rating = ratings.get(home, START_RATING)
         away_rating = ratings.get(away, START_RATING)
 
@@ -41,12 +50,17 @@ def add_elo(matches):
         ratings[home] = new_home
         ratings[away] = new_away
 
+    season_end[current_season] = dict(ratings)
+
     matches = matches.copy()
     matches["elo_home"] = elo_home
     matches["elo_away"] = elo_away
-    return matches   
+    return matches, season_end
 
 if __name__ == "__main__":
     matches = pd.read_csv("data/matches.csv", parse_dates=["date"])
-    matches = add_elo(matches)
-    print(matches[["date", "home_team", "away_team", "elo_home", "elo_away"]].tail())     
+    matches, season_end = add_elo(matches)
+
+    for season, ratings in season_end.items():
+        top = max(ratings, key=ratings.get)
+        print(season, top, round(ratings[top]))   
