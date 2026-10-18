@@ -76,15 +76,22 @@ def parse_dates(df):
     df["date"] = parsed    
     return df
 
+def clean_team_names(df):
+    df["home_team"] = df["home_team"].str.strip()
+    df["away_team"] = df["away_team"].str.strip()
+    return df
+
+
+
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
         try:
             df = load_raw(f"data/raw/{name}")
             check_required(df)
             df = select_columns(df)
-            df.loc[0, "date"] = "31/02/04"
             df = parse_dates(df)
-            print(name, df["date"].min(), df["date"].max())  
+            df = clean_team_names(df)
+            print(name, df.shape, "OK")  
         except Exception as e:
             print(name, "FAILED:", e)     
 
