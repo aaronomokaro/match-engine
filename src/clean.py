@@ -59,12 +59,21 @@ def select_columns(df):
         if col not in df.columns:
             df[col] = pd.NA
 
-    
     columns = REQUIRED | OPTIONAL
     df = df[list(columns)]
-
-    
     df = df.rename(columns=columns)
+    return df
+
+def parse_dates(df):
+    short = pd.to_datetime(df["date"], format="%d/%m/%y", errors="coerce")
+    long = pd.to_datetime(df["date"], format="%d/%m/%Y", errors="coerce")
+    parsed = short.fillna(long)
+
+    bad = df.loc[parsed.isna(), "date"]
+    if len(bad) > 0:
+        raise ValueError(f"unrecognised dates:{list(bad)}")
+
+    df["date"] = parsed    
     return df
 
 if __name__ == "__main__":
@@ -73,7 +82,9 @@ if __name__ == "__main__":
             df = load_raw(f"data/raw/{name}")
             check_required(df)
             df = select_columns(df)
-            print(name, list(df.columns))  
+            df.loc[0, "date"] = "31/02/04"
+            df = parse_dates(df)
+            print(name, df["date"].min(), df["date"].max())  
         except Exception as e:
             print(name, "FAILED:", e)     
 
