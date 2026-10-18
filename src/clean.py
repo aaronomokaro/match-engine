@@ -119,6 +119,22 @@ def check_results(df):
     if len(wrong) > 0:
         raise ValueError(f"Result doesn't match goals:\n{wrong}")
 
+def goals_ok(row):
+    for col in ["home_goals", "away_goals"]:
+        g = row[col]
+        if pd.isna(g):
+            return False
+        if g < 0:
+            return False
+        if g != int(g):
+            return False
+    return True
+
+def check_goals(df):
+    ok = df.apply(goals_ok, axis=1)
+    bad = df[ok == False]
+    if len(bad) > 0:
+        raise ValueError(f"Invalid goals:\n{bad}")   
 
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
@@ -129,9 +145,9 @@ if __name__ == "__main__":
             df = parse_dates(df)
             df = clean_team_names(df)
             df = add_season(df, name)
-            df.loc[0, "result"] = "x"
-            check_results(df)
             check_season_window(df)
+            check_goals(df)
+            check_results(df)
             print(name, df.shape, "OK")  
         except Exception as e:
             print(name, "FAILED:", e)     
