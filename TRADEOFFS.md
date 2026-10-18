@@ -27,3 +27,17 @@ If the site goes offline, anyone cloning the repo can't get
 the data. If the site edits an old file, they'd get
 different data and different results from mine without
 knowing why.
+
+## Using Bet365 odds for backtesting
+
+Decision: Use Bet365 home/draw/away odds (B365H, B365D, B365A).
+
+Why: Bet365 is the only bookmaker checked that is present and complete
+in all three sampled seasons (2003/04, 2012/13, 2025/26). Pinnacle,
+usually the sharpest benchmark, is missing for 170 of 380 matches in
+2025/26.
+
+Downside: Results only measure performance against one bookmaker. Other
+bookmakers may offer better odds on some matches, and Bet365 is not the
+sharpest market, so an edge against Bet365 is not proof of an edge
+against the market as a whole. Only 3 of 20+ seasons were checked.:
