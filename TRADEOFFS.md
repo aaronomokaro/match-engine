@@ -40,4 +40,4 @@ usually the sharpest benchmark, is missing for 170 of 380 matches in
 Downside: Results only measure performance against one bookmaker. Other
 bookmakers may offer better odds on some matches, and Bet365 is not the
 sharpest market, so an edge against Bet365 is not proof of an edge
-against the market as a whole. Only 3 of 20+ seasons were checked.:
+against the market as a whole. Only 3 of 20+ seasons were checked.
