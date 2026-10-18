@@ -32,11 +32,15 @@ def current_season_start():
     else:
         return today.year - 1
 
+def download_all():
+    for year in range(1993, current_season_start() + 1):
+        try:
+            download_season(year)
+        except Exception as e:
+            print(f"Failed {year}: {e}")
 
-for year in range(1993,current_season_start() + 1):
-    try:
-        download_season(year)
-    except Exception as e:
-        print(f"Failed {year}: {e}")    
+
+if __name__ == "__main__":
+    download_all() 
 
                 
