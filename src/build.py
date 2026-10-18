@@ -21,8 +21,11 @@ def combine_all():
 
 if __name__ == "__main__":
     matches = combine_all()
-    print(matches.head(3))
-    print(matches.tail(3))
+
+    teams = sorted(set(matches["home_team"]) | set(matches["away_team"]))
+    print(len(teams))
+    for team in teams:
+        print(team)
 
 
         
