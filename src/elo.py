@@ -22,8 +22,9 @@ def update_ratings(home_rating, away_rating, result, home_advantage, k):
     return home_rating + change, away_rating - change
 
 
-if __name__ == "__main__":
-    matches = pd.read_csv("data/matches.csv", parse_dates=["date"])
+def add_elo(matches):
+    if not matches["date"].is_monotonic_increasing:
+        raise ValueError("Matches must be sorted by date before running Elo")
 
     ratings = {}
     elo_home = []
@@ -40,8 +41,12 @@ if __name__ == "__main__":
         ratings[home] = new_home
         ratings[away] = new_away
 
+    matches = matches.copy()
     matches["elo_home"] = elo_home
     matches["elo_away"] = elo_away
+    return matches   
 
-    print(matches[["date", "home_team", "away_team", "result", "elo_home", "elo_away"]].head())
-    print(matches[["date", "home_team", "away_team", "result", "elo_home", "elo_away"]].tail())
+if __name__ == "__main__":
+    matches = pd.read_csv("data/matches.csv", parse_dates=["date"])
+    matches = add_elo(matches)
+    print(matches[["date", "home_team", "away_team", "elo_home", "elo_away"]].tail())     
