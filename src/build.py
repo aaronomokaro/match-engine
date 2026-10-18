@@ -17,15 +17,20 @@ def combine_all():
     
     return all_matches
 
-
+def save_matches(matches, path):
+    tmp_path = f"{path}.tmp"
+    matches.to_csv(tmp_path, index=False)
+    os.replace(tmp_path, path)
+    print(f"Saved {len(matches)} matches to {path}")
 
 if __name__ == "__main__":
     matches = combine_all()
+    save_matches(matches, "data/matches.csv")
 
-    teams = sorted(set(matches["home_team"]) | set(matches["away_team"]))
-    print(len(teams))
-    for team in teams:
-        print(team)
+    loaded = pd.read_csv("data/matches.csv", parse_dates=["date"])
+    print(loaded.shape)
+    print(loaded["date"].min(), loaded["date"].max())
+
 
 
         
