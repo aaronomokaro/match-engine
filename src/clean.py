@@ -19,6 +19,8 @@ def read_with_encoding(path, encoding):
         engine="python",
         on_bad_lines=lambda row: fix_long_row(row, header_len)
     )
+
+    df = df.dropna(how="all")    
     return df
     
 def load_raw(path):
