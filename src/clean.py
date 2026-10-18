@@ -81,7 +81,14 @@ def clean_team_names(df):
     df["away_team"] = df["away_team"].str.strip()
     return df
 
-
+def season_label(name):
+    code = name[3:7]
+    first = int(code[:2])
+    if first >= 90 :
+        start = 1900 + first
+    else:
+        start = 2000 + first
+    return f"{start}-{code[2:]}"
 
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
@@ -95,5 +102,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(name, "FAILED:", e)     
 
-   
+print(season_label("E0_9394.csv"))
+print(season_label("E0_9900.csv"))
+print(season_label("E0_0304.csv"))  
 
