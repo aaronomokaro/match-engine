@@ -1,3 +1,5 @@
+import pandas as pd
+
 START_RATING = 1500
 K = 20
 HOME_ADVANTAGE = 60
@@ -20,6 +22,26 @@ def update_ratings(home_rating, away_rating, result, home_advantage, k):
     return home_rating + change, away_rating - change
 
 
-print(update_ratings(1600, 1400, "A", 0, 20))
-print(update_ratings(1550, 1450, "D", 0, 20))
-print(update_ratings(1500, 1500, "D", 0, 20))    
+if __name__ == "__main__":
+    matches = pd.read_csv("data/matches.csv", parse_dates=["date"])
+
+    ratings = {}
+    elo_home = []
+    elo_away = []
+
+    for home, away, result in zip(matches["home_team"], matches["away_team"], matches["result"]):
+        home_rating = ratings.get(home, START_RATING)
+        away_rating = ratings.get(away, START_RATING)
+
+        elo_home.append(home_rating)
+        elo_away.append(away_rating)
+
+        new_home, new_away = update_ratings(home_rating, away_rating, result, HOME_ADVANTAGE, K)
+        ratings[home] = new_home
+        ratings[away] = new_away
+
+    matches["elo_home"] = elo_home
+    matches["elo_away"] = elo_away
+
+    print(matches[["date", "home_team", "away_team", "result", "elo_home", "elo_away"]].head())
+    print(matches[["date", "home_team", "away_team", "result", "elo_home", "elo_away"]].tail())
