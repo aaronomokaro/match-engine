@@ -80,3 +80,45 @@ the next season by a month.
 
 Downside: If a future season ever starts in July, every match before
 1 August would fail validation. The rule would need changing.
+
+
+## Storing clean data as a CSV
+
+Decision: Save the combined, cleaned matches as one CSV file
+(data/matches.csv).
+
+Why: About 12,600 rows, small enough for a CSV. I can open it in
+Cursor or Excel to check anything by eye, which I've relied on during
+exploration. Simpler than a database, with nothing new to learn.
+
+Downside: Later phases (ratings, predictions, backtest results) will
+mean several separate files, joined in pandas rather than queried
+together with SQL. Dates are stored as text and must be converted
+when loading. If the number of tables grows, I'll revisit SQLite;
+the pipeline rebuilds from raw files, so switching is cheap.
+
+## Elo settings
+
+Decision: Starting rating 1500, K = 20, home advantage 60.
+
+Why: Starting rating doesn't affect predictions, since Elo only uses
+the gap between ratings. K = 20 and home advantage = 60 are common
+starting values for football: K balances reacting to real change
+against overreacting to flukes.
+
+Downside: These are standard guesses, not tuned to this data. A
+different K or home advantage might predict better. To be tested in
+Phase 3, once predictions can be measured.
+
+## Promoted teams and summer carry-over
+
+Decision: Promoted teams start at 1500. Ratings carry over between
+seasons unchanged.
+
+Why: Simplest option; no extra assumptions.
+
+Downside: Promoted teams are usually weaker than average, so 1500 may
+overrate them early in the season. Promoted teams arriving at 1500
+while relegated teams leave lower may inflate average ratings over
+time. Carrying ratings over ignores summer changes in squads and
+managers. To be tested in Step 7.
