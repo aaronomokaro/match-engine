@@ -135,6 +135,13 @@ def check_goals(df):
     bad = df[ok == False]
     if len(bad) > 0:
         raise ValueError(f"Invalid goals:\n{bad}")   
+        
+def check_duplicates(df):
+    dupes = df.duplicated(subset=["home_team", "away_team"], keep=False)
+    bad = df[dupes]
+    if len(bad) > 0:
+        raise ValueError(f"Duplicate matches:\n{bad}")
+
 
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
@@ -148,6 +155,8 @@ if __name__ == "__main__":
             check_season_window(df)
             check_goals(df)
             check_results(df)
+            df = pd.concat([df, df.iloc[[0]]])
+            check_duplicates(df)
             print(name, df.shape, "OK")  
         except Exception as e:
             print(name, "FAILED:", e)     
