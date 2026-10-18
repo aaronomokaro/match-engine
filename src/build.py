@@ -9,11 +9,20 @@ def combine_all():
         df = clean_season(f"data/raw/{name}", name)
         combined.append(df)
     all_matches = pd.concat(combined, ignore_index=True) 
+    
+    all_matches = all_matches.sort_values(
+        ["date", "time", "home_team"],
+    )
+    all_matches = all_matches.reset_index(drop=True) 
+    
     return all_matches
+
+
 
 if __name__ == "__main__":
     matches = combine_all()
-    print(matches.shape)
+    print(matches.head(3))
+    print(matches.tail(3))
 
 
         
