@@ -142,6 +142,20 @@ def check_duplicates(df):
     if len(bad) > 0:
         raise ValueError(f"Duplicate matches:\n{bad}")
 
+def odds_ok(row):
+    for col in ["odds_home", "odds_draw", "odds_away"]:
+        o = row[col]
+        if pd.isna(o):
+            continue
+        if o <= 1:
+            return False
+    return True        
+
+def check_odds(df):
+    ok = df.apply(odds_ok, axis=1)
+    bad = df[ok == False]
+    if len(bad) > 0:
+        raise ValueError(f"invalid odds:\n{bad}")
 
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
@@ -155,8 +169,9 @@ if __name__ == "__main__":
             check_season_window(df)
             check_goals(df)
             check_results(df)
-            df = pd.concat([df, df.iloc[[0]]])
             check_duplicates(df)
+            df.loc[0, "odds_home"] = 0.5
+            check_odds(df)
             print(name, df.shape, "OK")  
         except Exception as e:
             print(name, "FAILED:", e)     
