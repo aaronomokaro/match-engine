@@ -90,6 +90,21 @@ def season_label(name):
         start = 2000 + first
     return f"{start}-{code[2:]}"
 
+def add_season(df, name):
+    df["season"] = season_label(name)
+    return df   
+
+def check_season_window(df):
+    start_year = int(df["season"].iloc[0][:4])
+
+    window_start = pd.Timestamp(start_year, 8, 1)
+    window_end = pd.Timestamp(start_year + 1, 7, 31)
+
+    outside = df[(df["date"] < window_start) | (df["date"] > window_end)]
+
+    if len(outside) > 0:
+        raise ValueError(f"Dates outside {window_start.date()} to {window_end.date()}:\n{outside}")
+
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
         try:
@@ -98,11 +113,11 @@ if __name__ == "__main__":
             df = select_columns(df)
             df = parse_dates(df)
             df = clean_team_names(df)
+            df = add_season(df, name)
+            df.loc[0, "date"] = pd.Timestamp(2099, 1, 1)
+            check_season_window(df)
             print(name, df.shape, "OK")  
         except Exception as e:
             print(name, "FAILED:", e)     
-
-print(season_label("E0_9394.csv"))
-print(season_label("E0_9900.csv"))
-print(season_label("E0_0304.csv"))  
+ 
 
