@@ -166,22 +166,25 @@ def check_match_count(df):
     if len(df) != expected:
         print(f"WARNING: {season} has {len(df)} matches, expected {expected}")   
 
+def clean_season(path, name):
+    df = load_raw(path)
+    check_required(df)
+    df = select_columns(df)
+    df = parse_dates(df)
+    df = clean_team_names(df)
+    df = add_season(df, name)
+    check_season_window(df)
+    check_goals(df)
+    check_results(df)
+    check_duplicates(df)
+    check_odds(df)
+    check_match_count(df)
+    return df
 
 if __name__ == "__main__":
     for name in sorted(os.listdir("data/raw")):
         try:
-            df = load_raw(f"data/raw/{name}")
-            check_required(df)
-            df = select_columns(df)
-            df = parse_dates(df)
-            df = clean_team_names(df)
-            df = add_season(df, name)
-            check_season_window(df)
-            check_goals(df)
-            check_results(df)
-            check_duplicates(df)
-            check_odds(df)
-            check_match_count(df)
+            df = clean_season(f"data/raw/{name}", name)
             print(name, df.shape, "OK")  
         except Exception as e:
             print(name, "FAILED:", e)     
